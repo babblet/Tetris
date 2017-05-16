@@ -1,3 +1,7 @@
+body {
+	background-color: grey;
+}
+
 table {
 	border: none;
 	border-spacing: 0;
