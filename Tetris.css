@@ -1,5 +1,5 @@
 body {
-	background-color: grey;
+	background-color: black;
 }
 
 table {
@@ -10,4 +10,5 @@ table {
 td {
 	width: 30px;
 	height: 30px;
+	box-shadow: 0 0 10px black;
 }

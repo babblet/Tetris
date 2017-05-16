@@ -49,7 +49,7 @@ function create_board(){ 						// Skapar bräda
 		document.write("<tr>");							// Skapa början på en rad i en tabel
 		for(let x = 1; x <= board_width; x++){					// Iterera igenom x-led
 			document.write( "<td id=" + x + "," + y + 
-					" style=\"background-color:black\">"); 		// Skriver ut en plats i tabelen, id är kordinaterna t.ex. id="3,6"
+					" style=\"background-color:grey\">"); 		// Skriver ut en plats i tabelen, id är kordinaterna t.ex. id="3,6"
 		}
 		document.write("</tr>");						// Stäng raden i tabelen.
 	}
@@ -83,7 +83,7 @@ function auto_move(){ 							// Rör blocket neråt i ett interval
 			t_coords.push([c_block.coords[i][0], c_block.coords[i][1] + 1]);
 		}
 		for(let i in c_block.coords){						// Ta bort nuvarande block.
-			change_color(c_block.coords[i][0], c_block.coords[i][1], "black");
+			change_color(c_block.coords[i][0], c_block.coords[i][1], "grey");
 		}
 		for(let i in t_coords){							// Skriv ut nytt block med tämporära kordinater
 			change_color(t_coords[i][0], t_coords[i][1], c_block.color);
