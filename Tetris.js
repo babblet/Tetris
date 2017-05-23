@@ -61,7 +61,7 @@ function new_block(){ 							//Skapar ett nytt block med en form från blocks[]
 	c_block.coords = blocks[c_block.rotation][r_number]; 				// Ge ny form av block till nuvarande block med första rotation
 	c_block.id = r_number;								// Ge id för formen så att man kan hitta rotationer för block i blocks[]
 	c_block.color = blocks_color[r_number];						// Ge färg till block
-//	c_block.lower_coords = find_lower_coords();					// Ge kordinaterna för de understa blocken, används med check_under();
+	c_block.indexes_lower_coords = find_lower_coords();					// Ge kordinaterna för de understa blocken, används med check_under();
 	draw_block_on_board(); 								// Skriv sedan ut blocket
 };
 
@@ -93,22 +93,22 @@ function auto_move(){ 							// Rör blocket neråt i ett interval
 	}, speed); 									// speed = Antal milisekunder innan functionen körs igen
 }
 
-/*	Fungerar men man kan göra det bättre genom att bara hård koda in det...
+
 function find_lower_coords(){						// Hittar de lägsta kordinaterna för blocket, används varje gång man det skapas ett nytt block eller när man roterar blocket.
-	let indexes_of_x_coords_duplicate = [];						// Håller indexen för c_block.coords[] om det finns fler av sanna x kordinat 
-	let x_coords_already_checked = [];						// Håller x kordinater som redan har används
-	let index_of_lower_coords = [];								// Array som håller de lägsta kordinaterna som hittats
+	let indexes_duplicate_x_coords = [];						// Håller indexen för c_block.coords[] om det finns fler av sanna x kordinat 
+	let x_coords_checked = [];						// Håller x kordinater som redan har används
+	let indexes_lower_coords = [];								// Array som håller de lägsta kordinaterna som hittats
 
 	function already_checked(coord){						// Ser om man redan lettat efter given x kordinat
-		for(let i in x_coords_already_checked){
-			if(x_coords_already_checked[i] == coord){
+		for(let i in x_coords_checked){
+			if(x_coords_checked[i] == coord){
 				return true;
 			}
 		}
 		return false;
 	}
 
-	function check_y_coords_with_x(indexes_of_x_coords){		// Fungerar... Fixa
+	function check_y_coords_with_x(indexes_of_x_coords){		// Fungerar...
 		let index_of_lowest_y_coord = indexes_of_x_coords[0];
 
 		for(let i in indexes_of_x_coords){
@@ -118,49 +118,39 @@ function find_lower_coords(){						// Hittar de lägsta kordinaterna för blocke
 		}
 
 		console.log("index_of_lowest_y_coord = " + index_of_lowest_y_coord);
-		index_of_lower_coords.push(index_of_lowest_y_coord);
+		indexes_lower_coords.push(index_of_lowest_y_coord);
 	}
 
-	function check_x_coords(){					// Fungerar... Fixa
+	function check_x_coords(){					// Fungerar...
 		for(let i in c_block.coords){
-			if(already_checked(c_block.coords[i][0])){
-				break;
-			} else { 
-				x_coords_already_checked.push(c_block.coords[i][0]);
+			if(already_checked(c_block.coords[i][0]) == false){
+				x_coords_checked.push(c_block.coords[i][0]);
 
 				for(let j in c_block.coords){
 					if(i != j){
 						if(c_block.coords[i][0] == c_block.coords[j][0]){
-							if(indexes_of_x_coords_duplicate.length == 0){
-								indexes_of_x_coords_duplicate.push(i);
+							if(indexes_duplicate_x_coords.length == 0){
+								indexes_duplicate_x_coords.push(i);
 							}
-							indexes_of_x_coords_duplicate.push(j);
+							indexes_duplicate_x_coords.push(j);
 						}
 					}
 				}
 
-				if(indexes_of_x_coords_duplicate.length > 0){
-					console.log("indexes_of_x_coords_duplicate =" + indexes_of_x_coords_duplicate);
-					check_y_coords_with_x(indexes_of_x_coords_duplicate);
-					indexes_of_x_coords_duplicate = [];
+				if(indexes_duplicate_x_coords.length > 0){
+					console.log("indexes_duplicate_x_coords =" + indexes_duplicate_x_coords);
+					check_y_coords_with_x(indexes_duplicate_x_coords);
+					indexes_duplicate_x_coords = [];
 				} else {
-					index_of_lower_coords.push(i);
+					console.log("indexes_lower_coords.push(i)");
+					indexes_lower_coords.push(i);
 				}
 			}
 		}
 	}
 
-	check_x_coords(); // Fixa
-
-	//debug
-	console.log(index_of_lower_coords);
-	for(let i in index_of_lower_coords){
-		console.log("index_of_lower_coords = " + index_of_lower_coords[i]);
-	}
-	console.log(c_block.coords);
-	for(let i in c_block.coords){
-		console.log(c_block.coords[i]);
-	}
+	check_x_coords();
+	return indexes_lower_coords;
 }
 
 function find_left_coords(){						// Hitta kordinater längst till vänster
@@ -170,7 +160,6 @@ function find_left_coords(){						// Hitta kordinater längst till vänster
 function find_right_coords(){						// Hitta kordianter längst till höger
 
 }
-*/
 
 function check_under(){ 						// Kollar om nuvarande block har någonting under sig
 
