@@ -73,31 +73,35 @@ function draw_block_on_board(){ 							// Skriver ut nuvarande blocket
 
 function change_color(x,y,color){ 					// Ändrar till angiven färg på angivna kordinater i spelplanen
 	if(x > 0 && y > 0){
-		document.getElementById(x+","+y).style.background = color;
+		document.getElementById(x+","+y).style.backgroundColor = color;
 	}
 }
 
 function auto_move(){ 							// Rör blocket neråt i ett interval
 	interval_id = setInterval(function(){ 						// Skapar ett interval som en function körs i. Intervalet returnar en id som man sedan kan avända för att stoppa intervalet. 
 		let t_coords = []; 							// För temporära kordinater
-		for(let i in c_block.coords){						// Ge alla kordinater från nuvarande block men y+1 till temporära kordinater 
-			t_coords.push([c_block.coords[i][0], c_block.coords[i][1] + 1]);
+		if(check_under() == false){							// Kolla under blocket först
+			for(let i in c_block.coords){						// Ge alla kordinater från nuvarande block men y+1 till temporära kordinater 
+				t_coords.push([c_block.coords[i][0], c_block.coords[i][1] + 1]);
+			}
+			for(let i in c_block.coords){						// Ta bort nuvarande block.
+				change_color(c_block.coords[i][0], c_block.coords[i][1], board_color);
+			}
+			for(let i in t_coords){							// Skriv ut nytt block med tämporära kordinater
+				change_color(t_coords[i][0], t_coords[i][1], c_block.color);
+			}
+			c_block.coords = t_coords; 						// Ge kordinater från tämporära kordinater till nuvarande block
+		} else {
+			new_block();
 		}
-		for(let i in c_block.coords){						// Ta bort nuvarande block.
-			change_color(c_block.coords[i][0], c_block.coords[i][1], board_color);
-		}
-		for(let i in t_coords){							// Skriv ut nytt block med tämporära kordinater
-			change_color(t_coords[i][0], t_coords[i][1], c_block.color);
-		}
-		c_block.coords = t_coords; 						// Ge kordinater från tämporära kordinater till nuvarande block
 	}, speed); 									// speed = Antal milisekunder innan functionen körs igen
 }
 
 
 function find_lower_coords(){						// Hittar de lägsta kordinaterna för blocket, används varje gång man det skapas ett nytt block eller när man roterar blocket.
 	let indexes_duplicate_x_coords = [];						// Håller indexen för c_block.coords[] om det finns fler av sanna x kordinat 
-	let x_coords_checked = [];						// Håller x kordinater som redan har används
-	let indexes_lower_coords = [];								// Array som håller de lägsta kordinaterna som hittats
+	let x_coords_checked = [];							// Håller x kordinater som redan har används
+	let indexes_lower_coords = [];							// Array som håller de lägsta kordinaterna som hittats
 
 	function already_checked(coord){						// Ser om man redan lettat efter given x kordinat
 		for(let i in x_coords_checked){
@@ -116,8 +120,6 @@ function find_lower_coords(){						// Hittar de lägsta kordinaterna för blocke
 				index_of_lowest_y_coord = indexes_of_x_coords[i];
 			}
 		}
-
-		console.log("index_of_lowest_y_coord = " + index_of_lowest_y_coord);
 		indexes_lower_coords.push(index_of_lowest_y_coord);
 	}
 
@@ -138,11 +140,9 @@ function find_lower_coords(){						// Hittar de lägsta kordinaterna för blocke
 				}
 
 				if(indexes_duplicate_x_coords.length > 0){
-					console.log("indexes_duplicate_x_coords =" + indexes_duplicate_x_coords);
 					check_y_coords_with_x(indexes_duplicate_x_coords);
 					indexes_duplicate_x_coords = [];
 				} else {
-					console.log("indexes_lower_coords.push(i)");
 					indexes_lower_coords.push(i);
 				}
 			}
@@ -162,7 +162,18 @@ function find_right_coords(){						// Hitta kordianter längst till höger
 }
 
 function check_under(){ 						// Kollar om nuvarande block har någonting under sig
-
+	let x_coord;
+	let y_coord;
+	for(let i = 0; i < c_block.indexes_lower_coords.length; i++){
+		console.log(c_block.indexes_lower_coords[i]);
+		x_coord = c_block.coords[c_block.indexes_lower_coords[i]][0];
+		y_coord = c_block.coords[c_block.indexes_lower_coords[i]][1] + 1;
+		if(y_coord > board_height || (document.getElementById(x_coord + "," + y_coord).style.backgroundColor != board_color)){
+			return true;
+		} else if(i == c_block.indexes_lower_coords.length - 1){
+			return false;
+		}
+	}
 }
 
 function move_left(){ 							// Rör block åt vänster
