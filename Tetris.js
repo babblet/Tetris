@@ -1,4 +1,6 @@
-//Brädan
+// Ljud
+var audio_file = "Tetris.mp3";
+// Brädan
 var board_width  = 9;
 var board_height = 15;
 var board_color = "grey";
@@ -55,6 +57,16 @@ var blocks_color = ["blue", "red", "green", "purple", "yellow", "orange", "white
 // Nuvarande block, blocket som blir manipulerat. Får sinna nycklar (rotation, coords, id, m.m) och värden i new_block().
 var c_block = new Object();
 
+function play_audio(){
+	if(audio_file != undefined){
+		var audio = new Audio(audio_file);
+		audio.addEventListener('ended', function() {
+    			this.currentTime = 0;
+    			this.play();
+		}, false);
+		audio.play();
+	}
+}
 
 // Skapar bräda.
 function create_board(){ 
@@ -269,6 +281,20 @@ function check_under(){
 		} else if(i == c_block.indexes_lower_coords.length - 1){
 			return false;
 		}
+	}
+}
+
+function check_row_full(){
+	function check_tetris(){
+
+	}
+
+	function remove_line(){
+
+	}
+
+	function move_blocks_down(){
+
 	}
 }
 
