@@ -52,8 +52,9 @@ var blocks = [
 // Färger för blocks.
 var blocks_color = ["blue", "red", "green", "purple", "yellow", "orange", "white"];	// Färger för blocks.
 
-// Nuvarande block, blocket som blir manipulerat. Får sinna nycklar (rotation, coords, id) och värden i new_block().
+// Nuvarande block, blocket som blir manipulerat. Får sinna nycklar (rotation, coords, id, m.m) och värden i new_block().
 var c_block = new Object();
+
 
 // Skapar bräda.
 function create_board(){ 
@@ -115,34 +116,37 @@ function change_color(x,y,color){
 }
 
 // Rör blocket neråt i ett interval
+// Använd bara om interval_auto_move inte är definerat.
 function auto_move(){
-	// Skapar ett interval. Intervalet returnar en id som man sedan kan avända för att stoppa intervalet. 
-	interval_auto_move = setInterval(function(){
-		// För temporära kordinater
-		let t_coords = [];
+	if(interval_auto_move == undefined){
+		// Skapar ett interval. Intervalet returnar en id som man sedan kan avända för att stoppa intervalet. 
+		interval_auto_move = setInterval(function(){
+			// För temporära kordinater
+			let t_coords = [];
 
-		// Kolla under blocket först
-		if(check_under() == false){
-			// Ge alla kordinater från nuvarande block men y+1 till temporära kordinater
-			for(let i in c_block.coords){
-				t_coords.push([c_block.coords[i][0], c_block.coords[i][1] + 1]);
+			// Kolla under blocket först
+			if(check_under() == false){
+				// Ge alla kordinater från nuvarande block men y+1 till temporära kordinater
+				for(let i in c_block.coords){
+					t_coords.push([c_block.coords[i][0], c_block.coords[i][1] + 1]);
+				}
+				// Ta bort nuvarande block.
+				for(let i in c_block.coords){
+					change_color(c_block.coords[i][0], c_block.coords[i][1], board_color);
+				}
+				// Skriv ut nytt block med tämporära kordinater
+				for(let i in t_coords){
+					change_color(t_coords[i][0], t_coords[i][1], c_block.color);
+				}
+				// Ge kordinater från tämporära kordinater till nuvarande block
+				c_block.coords = t_coords;
+			} else {
+				//Om nuvarande block har något under sig. Gör ett nytt block.
+				new_block();
 			}
-			// Ta bort nuvarande block.
-			for(let i in c_block.coords){
-				change_color(c_block.coords[i][0], c_block.coords[i][1], board_color);
-			}
-			// Skriv ut nytt block med tämporära kordinater
-			for(let i in t_coords){
-				change_color(t_coords[i][0], t_coords[i][1], c_block.color);
-			}
-			// Ge kordinater från tämporära kordinater till nuvarande block
-			c_block.coords = t_coords;
-		} else {
-			//Om nuvarande block har något under sig. Gör ett nytt block.
-			new_block();
-		}
-	// speed = Antal milisekunder innan functionen körs igen.
-	}, speed);
+		// speed = Antal milisekunder innan functionen körs igen.
+		}, speed);
+	}
 }
 
 // Hittar index för blocket, 
@@ -253,16 +257,6 @@ function find_indexes(find){
 	return indexes_coords;
 }
 
-// Hitta kordinater längst till vänster
-function find_left_indexes(){
-
-}
-
-// Hitta kordianter längst till höger
-function find_right_indexes(){
-
-}
-
 // Kollar om nuvarande block har någonting under sig
 function check_under(){
 	let x_coord;
@@ -280,6 +274,7 @@ function check_under(){
 
 // Rör block åt vänster
 function move_left(){
+	// Använder sig utav c_block.indexes_left_coords för att hitta om de finns något ivägen för vänster av nuvarande blocket
 	function check_left(){
 
 	}
@@ -288,6 +283,7 @@ function move_left(){
 
 // Rör block åt höger
 function move_right(){
+	// Använder sig utav c_block.indexes_rigth_coords för att hitta om de finns något ivägen för höger av nuvarande blocket
 	function check_right(){
 
 	}
