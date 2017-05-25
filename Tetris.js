@@ -1,5 +1,6 @@
 // Ljud
 var audio_file = "Tetris.mp3";
+
 // Brädan
 var board_width  = 9;
 var board_height = 15;
@@ -117,7 +118,7 @@ function new_block(){
 	c_block.indexes_left_coords = find_indexes("left");
 
 	// Skriv sedan ut blocket.
-	draw_block_on_board();
+	draw_block_on_board(c_block);
 }
 
 // Ändrar till angiven färg på angivna kordinater i spelplanen
@@ -127,31 +128,42 @@ function change_color(x,y,color){
 	}
 }
 
+// Skriver ut nuvarande blocket.
+function draw_block_on_board(){
+	// Itererar igenom alla arrayer som inehåller kordinater i nuvarande block.
+	for(let i in c_block.coords){
+		// Ändra färg på spelplan på de kordinaterna som nuvarande blocket har.
+		change_color(c_block.coords[i][0], c_block.coords[i][1], c_block.color);
+	}
+}
+
+function animate(x_offset, y_offset, custom){
+	if(custom == undefined){
+		let t_coords = [];
+		for(let i in c_block.coords){
+			t_coords.push([c_block.coords[i][0] + x_offset, c_block.coords[i][1] + y_offset]);
+		}
+		for(let i in c_block.coords){
+			change_color(c_block.coords[i][0], c_block.coords[i][1], board_color);
+		}
+		for(let i in t_coords){
+			change_color(t_coords[i][0], t_coords[i][1], c_block.color);
+		}
+		c_block.coords = t_coords;
+	} else {
+		c_block.coords = custom;
+	}
+}
+
 // Rör blocket neråt i ett interval
 // Använd bara om interval_auto_move inte är definerat.
 function auto_move(){
 	if(interval_auto_move == undefined){
 		// Skapar ett interval. Intervalet returnar en id som man sedan kan avända för att stoppa intervalet. 
 		interval_auto_move = setInterval(function(){
-			// För temporära kordinater
-			let t_coords = [];
-
 			// Kolla under blocket först
 			if(check_under() == false){
-				// Ge alla kordinater från nuvarande block men y+1 till temporära kordinater
-				for(let i in c_block.coords){
-					t_coords.push([c_block.coords[i][0], c_block.coords[i][1] + 1]);
-				}
-				// Ta bort nuvarande block.
-				for(let i in c_block.coords){
-					change_color(c_block.coords[i][0], c_block.coords[i][1], board_color);
-				}
-				// Skriv ut nytt block med tämporära kordinater
-				for(let i in t_coords){
-					change_color(t_coords[i][0], t_coords[i][1], c_block.color);
-				}
-				// Ge kordinater från tämporära kordinater till nuvarande block
-				c_block.coords = t_coords;
+				animate(0,1);
 			} else {
 				//Om nuvarande block har något under sig. Gör ett nytt block.
 				new_block();
@@ -269,7 +281,7 @@ function find_indexes(find){
 	return indexes_coords;
 }
 
-// Kollar om nuvarande block har någonting under sig
+// Kollar om nuvarande block har någonting under sig.
 function check_under(){
 	let x_coord;
 	let y_coord;
@@ -284,38 +296,128 @@ function check_under(){
 	}
 }
 
-function check_row_full(){
-	function check_tetris(){
+// Letar efter fulla rader.
+function remove_full_rows(){
+	// Räknar rader som tagits bort.
+	let count = 0;
+
+	// Tar bort en rad och flyttar ner alla block som är ovanför.
+	function remove_row(x){
 
 	}
 
-	function remove_line(){
+	//körs om count är 4 eller mer.
+	function tetris(){
 
 	}
 
-	function move_blocks_down(){
+	// Retunerar en array av x kordinater på de raderna som är fulla.
+	function check_rows(){
 
 	}
 }
 
-// Rör block åt vänster
-function move_left(){
-	// Använder sig utav c_block.indexes_left_coords för att hitta om de finns något ivägen för vänster av nuvarande blocket
-	function check_left(){
+
+// Ändrar hastigheten på blocket.
+function change_speed(new_speed){
+	speed = new_speed;
+	clearInterval(interval_auto_move);
+	interval_auto_move = undefined;
+	auto_move();
+}
+
+
+function move(key){
+	function check(direction){
+		let x_offset = 0;
+		let y_offset = 0;
+		let x_coord;
+		let y_coord;
+		let indexes_amount;
+		if(direction == "left"){
+			x_offset = -1
+			indexes_amount = c_block.indexes_left_coords.length;
+		} else if(direction == "right"){
+			x_offset = 1
+			indexes_amount = c_block.indexes_right_coords.length;
+		} else if (direction == "down"){
+			y_offset = 1;
+			indexes_amount = c_block.indexes_lower_coords.length;
+		}
+
+		for(let i = 0; i < indexes_amount; i++){
+			if(direction == "left"){
+				x_coord = c_block.coords[c_block.indexes_left_coords[i]][0] + x_offset;
+				y_coord = c_block.coords[c_block.indexes_left_coords[i]][1];
+			} else if (direction == "right"){
+				x_coord = c_block.coords[c_block.indexes_right_coords[i]][0] + x_offset;
+				y_coord = c_block.coords[c_block.indexes_right_coords[i]][1];
+			} else if(direction == "down"){
+				x_coord = c_block.coords[c_block.indexes_lower_coords[i]][0];
+				y_coord = c_block.coords[c_block.indexes_lower_coords[i]][1] + y_offset;
+			}
+
+			if((x_coord > board_width || x_coord < 1) && (direction == "left" || direction == "right")){
+				console.log("1: false")
+				return false;
+			} else if(y_coord > board_height && direction == "down"){
+				console.log("2: false")
+				new_block();
+				return false;
+			} else if(document.getElementById(x_coord + "," + y_coord).style.backgroundColor != board_color){
+				console.log(document.getElementById(x_coord + "," + y_coord).style.backgroundColor + " != " + board_color)
+				console.log("3: false")
+				return false;
+			}
+		}
+		console.log("true");
+		return true;
+	}
+
+
+	// Placerar blocket rakt ner. space.
+	function place_down(){
 
 	}
 
-}
-
-// Rör block åt höger
-function move_right(){
-	// Använder sig utav c_block.indexes_rigth_coords för att hitta om de finns något ivägen för höger av nuvarande blocket
-	function check_right(){
-
-	}
-
-}
-// Roterar nuvarande block
-function rotate(){
+	// Roterar nuvarande block. Pil tangent up.
+/*	function rotation(){
+		let t_coords = c_block.coords;
+		let old_rotation = c_block.rotation;
+		let new_rotation = c_block.rotation + 1;
+		if(new_rotation == 4){
+			rotation = 0;
+		}
 		
+		for(let i in t_coords){
+			let x = t_coords[i][0];
+			let y = t_coords[i][1];
+
+		}
+	}
+*/
+	key = key || window.event;
+	console.log(key.keyCode);
+	// Up arrow
+	if(key.keyCode == 38) {
+		rotate();
+	// Space bar
+	} else if(key.keyCode == 32) {
+		place_down();
+	// Left arrow
+	} else if(key.keyCode == 37) {
+		if(check("left") == true){
+			animate(-1,0);
+		}
+	// Right arrow
+	} else if(key.keyCode == 39) {
+		if(check("right") == true){
+			animate(1,0);
+		}
+	// Down arrow
+	} else if(key.keyCode == 40) {
+		if(check("down") == true){
+			animate(0,1);
+		}
+	}
 }
