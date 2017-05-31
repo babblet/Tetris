@@ -89,7 +89,8 @@ function create_board(){
 function new_block(){
 	// Skriver ut nuvarande blocket.
 	function draw_block_on_board(){
-		// Itererar igenom alla arrayer som inehåller kordinater i nuvarande block.
+		// Itererar igenom alla arrayer som inehåller kordinater i nuvarande block.		
+		animate(Math.floor(board_width/2) - 1 , 0);
 		for(let i in c_block.coords){
 			// Ändra färg på spelplan på de kordinaterna som nuvarande blocket har.
 			change_color(c_block.coords[i][0], c_block.coords[i][1], c_block.color);
@@ -97,12 +98,12 @@ function new_block(){
 	}
 
 	// Ge id för formen så att man kan hitta rotationer för block i blocks[].
-	c_block.id = Math.floor(Math.random() * blocks[0].length);;
+	c_block.id = Math.floor(Math.random() * blocks[0].length);
 
 	// Ge blocket första rotation.
 	c_block.rotation = 0;
 
-	// Ge ny form av block till nuvarande block med första rotation.								
+	// Ge ny form av block till nuvarande block med första rotation.
 	c_block.coords = blocks[c_block.rotation][c_block.id];
 
 	// Ge färg till block.
@@ -118,7 +119,7 @@ function new_block(){
 	c_block.indexes_left_coords = find_indexes("left");
 
 	// Skriv sedan ut blocket.
-	draw_block_on_board(c_block);
+	draw_block_on_board();
 }
 
 // Ändrar till angiven färg på angivna kordinater i spelplanen
@@ -377,25 +378,15 @@ function move(key){
 
 	// Placerar blocket rakt ner. space.
 	function place_down(){
+		while(check_under() == false){
+			animate(0,1);
+		}
+		new_block();	
+	}
+	
+	function rotate(){
 
 	}
-
-	// Roterar nuvarande block. Pil tangent up.
-/*	function rotation(){
-		let t_coords = c_block.coords;
-		let old_rotation = c_block.rotation;
-		let new_rotation = c_block.rotation + 1;
-		if(new_rotation == 4){
-			rotation = 0;
-		}
-		
-		for(let i in t_coords){
-			let x = t_coords[i][0];
-			let y = t_coords[i][1];
-
-		}
-	}
-*/
 	key = key || window.event;
 	console.log(key.keyCode);
 	// Up arrow
