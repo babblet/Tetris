@@ -170,6 +170,7 @@ function auto_move(){
 				animate(0,1);
 			} else {
 				//Om nuvarande block har något under sig. Gör ett nytt block.
+				check_rows();
 				new_block();
 			}
 		// speed = Antal milisekunder innan functionen körs igen.
@@ -300,24 +301,44 @@ function check_under(){
 	}
 }
 
+
+
+
 // Letar efter fulla rader.
-function remove_full_rows(){
+function check_rows(){
 	// Räknar rader som tagits bort.
 	let count = 0;
-
-	// Tar bort en rad och flyttar ner alla block som är ovanför.
-	function remove_row(x){
+	let tetris_count = 0;
+	function move_block_down(limit){
+		let block_holder = [];
+		for(let y = 1; y < limit; y++){
+			for(let x = 1; x <= board_width; x++){
+				if(document.getElementById(x+","+y).style.backgroundColor != board_color){
+					let color = document.getElementById(x+","+y).style.backgroundColor;
+					block_holder.push([[x,y],[color]]);
+				}
+			}
+		}
 
 	}
-
-	//körs om count är 4 eller mer.
-	function tetris(){
-
+	function remove_row(y){
+		for(let x = 1; x <= board_width; x++){
+			change_color(x,y,board_color); 
+		}
+		tetris_count++;
 	}
 
-	// Retunerar en array av x kordinater på de raderna som är fulla.
-	function check_rows(){
-
+	for(let y = 1; y <= board_height; y++){
+		for(let x = 1; x <= board_width; x++){
+			if(document.getElementById(x + "," + y).style.backgroundColor != board_color){
+				count++;
+				if(count == board_width){
+					remove_row(y);
+					move_block_down(y);
+				}
+			}
+		}
+		count = 0;
 	}
 }
 
@@ -388,21 +409,23 @@ function move(key){
 
 	// Roterar nuvarande block. Pil tangent up.
 	function rotate(){
-		/*function copy(oldObj){
-			let newObj = new Object;
-			for(let i in oldObj){
-				if(oldObj.hasOwnProperty(i)){
-					newObj[i] = oldObj[i];
-				}
-			}
-			return newObj;*/
-
 		let t_coords = [];
 		for(let i in c_block.coords){
 			t_coords.push([c_block.coords[i][0], c_block.coords[i][1]]);
 		}
 		let block_to_remove = blocks[c_block.rotation][c_block.id];
-		let block_to_add = blocks[c_block.rotation + 1][c_block.id];
+		let block_to_add;
+		if(c_block.rotation == 3){
+			block_to_add = blocks[0][c_block.id];
+		} else {
+			block_to_add = blocks[c_block.rotation + 1][c_block.id];
+		}
+
+		for(let i in c_block.coords){
+			console.log(c_block.coords[i]);
+			change_color(c_block.coords[i][0], c_block.coords[i][1], board_color);
+		}
+
 		for(let i in t_coords){
 			for(let j in t_coords[i]){
 				console.log("t_coords = " + t_coords);
@@ -411,22 +434,16 @@ function move(key){
 				t_coords[i][j] += block_to_add[i][j];
 			}
 			if(document.getElementById(t_coords[i][0] + "," + t_coords[i][1]).style.backgroundColor != board_color){
-			
+				animate(0,0);
+				return false;
 			}
 		}
-		
-		
-		
-		for(let i in c_block.coords){
-			console.log(c_block.coords[i]);
-			change_color(c_block.coords[i][0], c_block.coords[i][1], board_color);
-		}
 		c_block.coords = t_coords
-
-
-
-		c_block.rotation += 1;
-
+		if(c_block.rotation == 3){
+			c_block.rotation = 0;
+		} else {
+			c_block.rotation += 1;
+		}
 		c_block.indexes_lower_coords = find_indexes("bottom");
 		c_block.indexes_right_coords = find_indexes("right");
 		c_block.indexes_left_coords = find_indexes("left");
