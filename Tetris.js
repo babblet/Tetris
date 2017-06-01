@@ -332,6 +332,10 @@ function check_rows(){
 		tetris_count++;
 	}
 
+	function score_total(){
+		
+	}
+
 	for(let y = 1; y <= board_height; y++){
 		for(let x = 1; x <= board_width; x++){
 			if(document.getElementById(x + "," + y).style.backgroundColor != board_color){
@@ -344,6 +348,7 @@ function check_rows(){
 		}
 		count = 0;
 	}
+	score_total();
 }
 
 
