@@ -1,5 +1,4 @@
 // Ljud
-
 var audio_file = "Tetris.mp3";
 
 // Brädan
@@ -57,7 +56,6 @@ var blocks = [
 var blocks_color = ["blue", "red", "green", "purple", "yellow", "orange", "white"];	// Färger för blocks.
 
 // Nuvarande block, blocket som blir manipulerat. Får sina nycklar (rotation, coords, id, m.m) och värden i new_block().
-
 var c_block = new Object();
 
 function play_audio(){
@@ -105,8 +103,7 @@ function new_block(){
 	// Ge blocket första rotation.
 	c_block.rotation = 0;
 
-
-	// Ge ny form av block till nuvarande block med första rotation.								
+	// Ge ny form av block till nuvarande block med första rotation.
 	c_block.coords = blocks[c_block.rotation][c_block.id];
 
 	// Ge färg till block.
@@ -309,6 +306,7 @@ function check_rows(){
 	// Räknar rader som tagits bort.
 	let count = 0;
 	let tetris_count = 0;
+
 	function move_block_down(limit){
 		let block_holder = [];
 		for(let y = 1; y < limit; y++){
@@ -325,6 +323,7 @@ function check_rows(){
 			change_color(block_holder[i][0][0], block_holder[i][0][1] + 1, block_holder[i][1]);
 		}
 	}
+
 	function remove_row(y){
 		for(let x = 1; x <= board_width; x++){
 			change_color(x,y,board_color); 
@@ -338,7 +337,7 @@ function check_rows(){
 
 	for(let y = 1; y <= board_height; y++){
 		for(let x = 1; x <= board_width; x++){
-			if(document.getElementById(x + "," + y).style.backgroundColor != board_color){
+				if(document.getElementById(x + "," + y).style.backgroundColor != board_color){
 				count++;
 				if(count == board_width){
 					remove_row(y);
@@ -414,6 +413,8 @@ function move(key){
 		while(check_under() == false){
 			animate(0,1);
 		}
+		check_rows();
+		new_block();
 	}
 
 	// Roterar nuvarande block. Pil tangent up.
@@ -439,8 +440,18 @@ function move(key){
 			for(let j in t_coords[i]){
 				console.log("t_coords = " + t_coords);
 				console.log("c_block = " + c_block.coords);
-				t_coords[i][j] -= block_to_remove[i][j];
-				t_coords[i][j] += block_to_add[i][j];
+				let axis;
+				let total = t_coords[i][j] -  block_to_remove[i][j] + block_to_add[i][j];
+				if(j == 0){
+					axis = board_width;
+				} else {
+					axis = board_height;
+				}
+				if(total > axis || total < 1){
+					animate(0,0);
+					return false;
+				}
+				t_coords[i][j] = total;
 			}
 			if(document.getElementById(t_coords[i][0] + "," + t_coords[i][1]).style.backgroundColor != board_color){
 				animate(0,0);
@@ -456,7 +467,9 @@ function move(key){
 		c_block.indexes_lower_coords = find_indexes("bottom");
 		c_block.indexes_right_coords = find_indexes("right");
 		c_block.indexes_left_coords = find_indexes("left");
+		animate(0,0);
 	}
+
 	key = key || window.event;
 	console.log(key.keyCode);
 	// Up arrow
