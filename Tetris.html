@@ -7,12 +7,17 @@
 	<script type="text/javascript" src="Tetris.js"></script>
 </head>
 <body>
-	<table border="1">
+	<table border="1" id="board">
 	<script>
 		create_board(); 
-		draw_block_on_board(c_block);
+		new_block();
+		auto_move();
+		play_audio()
+		document.onkeydown = function(key) {move(key)};
 	</script>
 	</table>
-	<p> hej </p>
+	<table border="1">
+		
+	</table>
 </body>
 </html>
