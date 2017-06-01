@@ -315,11 +315,15 @@ function check_rows(){
 			for(let x = 1; x <= board_width; x++){
 				if(document.getElementById(x+","+y).style.backgroundColor != board_color){
 					let color = document.getElementById(x+","+y).style.backgroundColor;
+					console.log(color);
 					block_holder.push([[x,y],[color]]);
+					document.getElementById(x + "," + y).style.backgroundColor = board_color;
 				}
 			}
 		}
-
+		for(let i in block_holder){
+			change_color(block_holder[i][0][0], block_holder[i][0][1] + 1, block_holder[i][1]);
+		}
 	}
 	function remove_row(y){
 		for(let x = 1; x <= board_width; x++){
