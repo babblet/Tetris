@@ -1,5 +1,9 @@
 // Ljud
 var audio_file = "Tetris.mp3";
+if(audio_file != undefined){
+	var audio = new Audio(audio_file);	
+}
+
 
 // Brädan, får värden i game_reset();
 var board_color = "grey";
@@ -61,14 +65,19 @@ var blocks = [
 // Nuvarande block, blocket som blir manipulerat. Får sina nycklar (rotation, coords, id, m.m) och värden i new_block().
 var c_block = new Object();
 
-function play_audio(){
-	if(audio_file != undefined){
-		var audio = new Audio(audio_file);
-		audio.addEventListener('ended', function() {
+function play_audio(state){
+	if(state == "play"){
+		audio.addEventListener("ended", function() {
     			this.currentTime = 0;
     			this.play();
 		}, false);
 		audio.play();
+	} else if(state == "stop"){
+		audio.pause();
+		audio.addEventListener("pause", function() {
+			this.currentTime = 0;
+		}, false);
+			
 	}
 }
 
@@ -76,15 +85,15 @@ function play_audio(){
 function create_board(){ 
 	// Iterera igenom y-led.
 	for(let y = 1; y <= board_height; y++){
-		// Skapa början på en rad i en tabel.
-		document.write("<tr>");
-		// Iterera igenom x-led.							
+		// Iterera igenom x-led.
+		document.getElementById("board").insertAdjacentHTML("beforeend", "<tr id=\"row" + y + "\">");				
 		for(let x = 1; x <= board_width; x++){
 			// Skriv ut en plats i tabelen, id är kordinaterna t.ex. id="3,6".
-			document.write( "<td id=" + x + "," + y + " style=\"background-color:" + board_color + "\">");
+			document.getElementById("row" + y).insertAdjacentHTML(
+				"beforeend",
+				"<td id=" + x + "," + y + " style=\"background-color:" + board_color + "\">"
+			);
 		}
-		// Stäng raden i tabelen.
-		document.write("</tr>");
 	}
 }
 
@@ -97,7 +106,6 @@ function new_block(){
 		for(let i in c_block.coords){
 			x = c_block.coords[i][0] + (Math.floor(board_width/2 - 1));
 			y = c_block.coords[i][1];
-			console.log(x,y);
 			if(document.getElementById(x + ","+ y).style.backgroundColor != board_color){
 				return false;
 			}
@@ -129,7 +137,7 @@ function new_block(){
 
 	// Skriv sedan ut blocket.
 	if(!draw_block_on_board()){
-		console.log("LOST!");
+		clearInterval(interval_auto_move);
 		end_game();
 	}
 }
@@ -177,7 +185,7 @@ function auto_move(){
 			// Kolla under blocket först
 			if(check_under() == false){
 				animate(0,1);
-			} else {
+			} else if(interval_auto_move != undefined){
 				//Om nuvarande block har något under sig. Gör ett nytt block.
 				check_rows();
 				new_block();
@@ -207,7 +215,6 @@ function find_indexes(find){
 
 	// Kolla vad find har fått för värde.
 	if(find == undefined){
-		console.log("find_indexes: no argument");
 		return false;
 	} else if(find == "bottom"){
 		first_coord = 0;
@@ -325,7 +332,6 @@ function check_rows(){
 			for(let x = 1; x <= board_width; x++){
 				if(document.getElementById(x+","+y).style.backgroundColor != board_color){
 					let color = document.getElementById(x+","+y).style.backgroundColor;
-					console.log(color);
 					block_holder.push([[x,y],[color]]);
 					document.getElementById(x + "," + y).style.backgroundColor = board_color;
 				}
@@ -361,7 +367,6 @@ function check_rows(){
 				score = "0" + score;
 			}		
 		}
-		console.log(score);
 		document.getElementById("score").innerHTML = score;
 	}
 
@@ -421,19 +426,14 @@ function move(key){
 			}
 
 			if((x_coord > board_width || x_coord < 1) && (direction == "left" || direction == "right")){
-				console.log("1: false")
 				return false;
 			} else if(y_coord > board_height && direction == "down"){
-				console.log("2: false")
 				new_block();
 				return false;
 			} else if(document.getElementById(x_coord + "," + y_coord).style.backgroundColor != board_color){
-				console.log(document.getElementById(x_coord + "," + y_coord).style.backgroundColor + " != " + board_color)
-				console.log("3: false")
 				return false;
 			}
 		}
-		console.log("true");
 		return true;
 	}
 
@@ -462,14 +462,11 @@ function move(key){
 		}
 
 		for(let i in c_block.coords){
-			console.log(c_block.coords[i]);
 			change_color(c_block.coords[i][0], c_block.coords[i][1], board_color);
 		}
 
 		for(let i in t_coords){
 			for(let j in t_coords[i]){
-				console.log("t_coords = " + t_coords);
-				console.log("c_block = " + c_block.coords);
 				let axis;
 				let total = t_coords[i][j] -  block_to_remove[i][j] + block_to_add[i][j];
 				if(j == 0){
@@ -501,7 +498,6 @@ function move(key){
 	}
 
 	key = key || window.event;
-	console.log(key.keyCode);
 	// Up arrow
 	if(key.keyCode == 38) {
 		rotate();
@@ -530,16 +526,23 @@ function start(){
 	create_board();
 	new_block();
 	auto_move();
-	play_audio()
+	play_audio("play");
 }
 
 function end_game(){
+	play_audio("stop");
 	clearInterval(interval_auto_move);
+	interval_auto_move = undefined;
+	game_reset();
 }
 
 function game_reset(){
-	document.onkeydown = function(key) {move(key)};
+	if(document.getElementById("board").children.length != 0){
+		for(let y = 1; y <= board_height; y++){
+			document.getElementById("row" + y).outerHTML="";
+		}
+	}
 	speed = 1000;
 	btob = false;
-	start();	
+	start();
 }
