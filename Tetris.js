@@ -542,6 +542,7 @@ function game_reset(){
 			document.getElementById("row" + y).outerHTML="";
 		}
 	}
+	document.getElementById("score").innerHTML = "00000000";
 	speed = 1000;
 	btob = false;
 	start();

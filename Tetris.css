@@ -1,6 +1,7 @@
 body {
 	background-color: white;
 	color: black;
+	font-family: 'Orbitron';
 }
 
 table {
@@ -17,14 +18,14 @@ td {
 
 #score_shadow {
 	margin: 0 auto;
-	width: 150px;
+	width: 200px;
 	box-shadow: 0px 5px 20px black;
 }	
 
 #score_background {
 	background-color: grey;
-	width: 150px;
-	height: 40px;
+	width: 200px;
+	height: 30px;
 	border: solid;
 	border-color: grey;
 	border-width: 1px;
@@ -34,6 +35,6 @@ td {
 
 #score {
 	text-align: center;
-	font-size: 2em;
-	padding-top: 2px;
+	font-size: 1.8em;
+	padding-top: 3px;
 }
