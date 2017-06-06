@@ -1,16 +1,22 @@
 // Ljud
 var audio_file = "Tetris.mp3";
 
-// Brädan
-var board_width  = 9;
-var board_height = 15;
+// Brädan, får värden i game_reset();
 var board_color = "grey";
+var board_width = 9;
+var board_height = 15;
 
-// Hur snabbt blocket rör sig ner i milisekunder 
-var speed = 1000;
+// back to back Tetris, får värden i game_reset();
+var btob;
+
+// Hur snabbt blocket rör sig ner i milisekunder, får värden i game_reset();
+var speed;
 
 // Interval som rör blocket neråt. Får sitt värde i auto_move().
 var interval_auto_move;
+
+// Färger för blocks.
+var blocks_color = ["blue", "red", "green", "purple", "yellow", "orange", "white"];
 
 // Former som man ger till nuvarande block (c_block) och rotationer till alla block
 var blocks = [	
@@ -52,9 +58,6 @@ var blocks = [
 	]
 ];
 
-// Färger för blocks.
-var blocks_color = ["blue", "red", "green", "purple", "yellow", "orange", "white"];	// Färger för blocks.
-
 // Nuvarande block, blocket som blir manipulerat. Får sina nycklar (rotation, coords, id, m.m) och värden i new_block().
 var c_block = new Object();
 
@@ -89,12 +92,18 @@ function create_board(){
 function new_block(){
 	// Skriver ut nuvarande blocket.
 	function draw_block_on_board(){
-		// Itererar igenom alla arrayer som inehåller kordinater i nuvarande block.		
-		animate(Math.floor(board_width/2) - 1 , 0);
+		let x,y;
+		// Itererar igenom alla arrayer som inehåller kordinater i nuvarande block.
 		for(let i in c_block.coords){
-			// Ändra färg på spelplan på de kordinaterna som nuvarande blocket har.
-			change_color(c_block.coords[i][0], c_block.coords[i][1], c_block.color);
+			x = c_block.coords[i][0] + (Math.floor(board_width/2 - 1));
+			y = c_block.coords[i][1];
+			console.log(x,y);
+			if(document.getElementById(x + ","+ y).style.backgroundColor != board_color){
+				return false;
+			}
 		}
+		animate(Math.floor(board_width/2) - 1 , 0);
+		return true;
 	}
 
 	// Ge id för formen så att man kan hitta rotationer för block i blocks[].
@@ -119,7 +128,10 @@ function new_block(){
 	c_block.indexes_left_coords = find_indexes("left");
 
 	// Skriv sedan ut blocket.
-	draw_block_on_board();
+	if(!draw_block_on_board()){
+		console.log("LOST!");
+		end_game();
+	}
 }
 
 // Ändrar till angiven färg på angivna kordinater i spelplanen
@@ -332,7 +344,25 @@ function check_rows(){
 	}
 
 	function score_total(){
-		
+		let score = Number(document.getElementById("score").innerHTML);
+		if(btob === true && tetris_count == 4){
+			score += 1200;
+		}
+		else if(tetris_count == 4){
+			score += 800;
+			btob = true;
+		} else {
+		 score += (100*tetris_count);
+			btob = false;
+		}
+		score = score.toString();
+		if(score.length != 8){
+			for(let i = score.length; i < 8; i++){
+				score = "0" + score;
+			}		
+		}
+		console.log(score);
+		document.getElementById("score").innerHTML = score;
 	}
 
 	for(let y = 1; y <= board_height; y++){
@@ -494,4 +524,22 @@ function move(key){
 			animate(0,1);
 		}
 	}
+}
+
+function start(){
+	create_board();
+	new_block();
+	auto_move();
+	play_audio()
+}
+
+function end_game(){
+	clearInterval(interval_auto_move);
+}
+
+function game_reset(){
+	document.onkeydown = function(key) {move(key)};
+	speed = 1000;
+	btob = false;
+	start();	
 }

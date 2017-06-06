@@ -7,13 +7,16 @@
 	<script type="text/javascript" src="Tetris.js"></script>
 </head>
 <body>
+	<div id="score_shadow">
+		<div id="score_background">
+			<div id="score">
+				00000000
+			</div>
+		</div>
+	</div>
 	<table border="1" id="board">
 	<script>
-		create_board(); 
-		new_block();
-		auto_move();
-		play_audio()
-		document.onkeydown = function(key) {move(key)};
+		game_reset();
 	</script>
 	</table>
 	<table border="1">
