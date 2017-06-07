@@ -2,7 +2,9 @@
 var audio_file = "Tetris.mp3";
 if(audio_file != undefined){
 	var audio = new Audio(audio_file);	
+
 }
+var mute = false;
 
 
 // Brädan, får värden i game_reset();
@@ -499,6 +501,7 @@ function move(key){
 
 	key = key || window.event;
 	// Up arrow
+	console.log(key.keyCode);
 	if(key.keyCode == 38) {
 		rotate();
 	// Space bar
@@ -519,6 +522,18 @@ function move(key){
 		if(check("down") == true){
 			animate(0,1);
 		}
+
+	}
+	else if(key.keyCode == 77){
+		if (!mute){
+			play_audio("stop");
+			mute = true;
+
+		} else {
+			play_audio("play");
+			mute = false;	
+		}
+
 	}
 }
 
