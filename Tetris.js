@@ -16,7 +16,7 @@ var board_height = 15;
 var btob;
 
 // Hur snabbt blocket rör sig ner i milisekunder, får värden i game_reset();
-var speed;
+var speed = 1000;;
 
 // Interval som rör blocket neråt. Får sitt värde i auto_move().
 var interval_auto_move;
@@ -563,7 +563,6 @@ function game_reset(){
 		}
 	}
 	document.getElementById("score").innerHTML = "00000000";
-	speed = 1000;
 	btob = false;
 	start();
 }
