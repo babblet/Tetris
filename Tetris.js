@@ -320,7 +320,11 @@ function check_under(){
 }
 
 
+function level_check(score){
+	console.log((1000/(score/1000+1)) + 200);
 
+	change_speed((1000/(score/1000+1))+ 200);
+}
 
 // Letar efter fulla rader.
 function check_rows(){
@@ -370,6 +374,7 @@ function check_rows(){
 			}		
 		}
 		document.getElementById("score").innerHTML = score;
+		level_check(score);
 	}
 
 	for(let y = 1; y <= board_height; y++){
@@ -391,6 +396,7 @@ function check_rows(){
 // Ändrar hastigheten på blocket.
 function change_speed(new_speed){
 	speed = new_speed;
+	console.log(speed);
 	clearInterval(interval_auto_move);
 	interval_auto_move = undefined;
 	auto_move();
@@ -501,7 +507,6 @@ function move(key){
 
 	key = key || window.event;
 	// Up arrow
-	console.log(key.keyCode);
 	if(key.keyCode == 38) {
 		rotate();
 	// Space bar
